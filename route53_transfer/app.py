@@ -6,6 +6,8 @@ import itertools
 from os import environ
 from boto import route53
 from boto import connect_s3
+from os.path import join
+import boto
 from boto.route53.record import Record, ResourceRecordSets
 from boto.s3.key import Key
 
@@ -40,7 +42,6 @@ class ComparableRecord(object):
 def exit_with_error(error):
     sys.stderr.write(error)
     sys.exit(1)
-
 
 def get_aws_credentials(params):
     access_key = params.get('--access-key-id') or environ.get('AWS_ACCESS_KEY_ID')
@@ -227,9 +228,8 @@ def up_to_s3(con, file, s3_bucket):
 
 
 def run(params):
-    access_key, secret_key = get_aws_credentials(params)
-    con = route53.connect_to_region('universal', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-    con_s3 = connect_s3(aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+    con = boto.connect_route53()
+    con_s3 = boto.connect_s3()
     zone_name = params['<zone>']
     filename = params['<file>']
 
